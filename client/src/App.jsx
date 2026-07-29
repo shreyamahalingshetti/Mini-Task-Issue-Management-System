@@ -1,12 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-
-// ── Placeholder pages ──────────────────────────────────────────────────────
-function LoginPage()    { return <div>Login Page</div>; }
-function RegisterPage() { return <div>Register Page</div>; }
-function BoardPage()    { return <div>Board Page</div>; }
-// ──────────────────────────────────────────────────────────────────────────
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Board from './pages/Board';
 
 function App() {
   return (
@@ -14,12 +11,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public routes */}
-          <Route path="/login"    element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/board" element={<BoardPage />} />
+            <Route path="/board" element={<Board />} />
           </Route>
 
           {/* Default redirect */}
