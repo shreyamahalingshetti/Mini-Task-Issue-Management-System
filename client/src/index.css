@@ -559,6 +559,16 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 60px;         /* keeps the drop target hittable when empty */
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+/* Drop-zone highlight when a card is hovering over this column */
+.column-content.column-drop-active {
+  background-color: #EFF6FF;
+  outline: 2px dashed #93C5FD;
+  outline-offset: -2px;
 }
 
 .empty-column-placeholder {
@@ -587,6 +597,26 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .task-card:hover {
   border-color: #BFDBFE;
   box-shadow: var(--shadow-elevated);
+}
+
+/* Dragging state — slight lift + tilt so user knows it's grabbed */
+.task-card--dragging {
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.18), 0 4px 8px rgba(0,0,0,0.08);
+  border-color: #93C5FD;
+  background: #FAFEFF;
+  transform: rotate(1.5deg) scale(1.02);
+  opacity: 0.95;
+  z-index: 999;
+}
+
+/* Drag handle: only the card header is draggable */
+.task-drag-handle {
+  cursor: grab;
+  user-select: none;
+}
+
+.task-drag-handle:active {
+  cursor: grabbing;
 }
 
 .task-card-header {
