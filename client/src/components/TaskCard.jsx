@@ -55,7 +55,7 @@ function TaskCard({ task, onEdit, onDelete, onStatusChange }) {
             onClick={() => onEdit(task)}
             title="Edit Task"
           >
-            ✏️
+            Edit
           </button>
           <button
             type="button"
@@ -63,7 +63,7 @@ function TaskCard({ task, onEdit, onDelete, onStatusChange }) {
             onClick={handleDelete}
             title="Delete Task"
           >
-            🗑️
+            Delete
           </button>
         </div>
       </div>

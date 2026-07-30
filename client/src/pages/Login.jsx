@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthLayout from '../components/AuthLayout';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -59,11 +60,10 @@ function Login() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">✦</div>
-        <h1>Welcome back</h1>
-        <p className="subtitle">Enter your credentials to access your account.</p>
+    <AuthLayout>
+      <div className="auth-form-container">
+        <h2 className="auth-title">Welcome back</h2>
+        <p className="auth-subtitle">Enter your credentials to access your account.</p>
 
         {generalError && <div className="alert-error">{generalError}</div>}
 
@@ -80,7 +80,7 @@ function Login() {
               className={errors.email ? 'input-error' : ''}
               autoComplete="email"
             />
-            {errors.email && <span className="field-error">⚠ {errors.email}</span>}
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -95,10 +95,10 @@ function Login() {
               className={errors.password ? 'input-error' : ''}
               autoComplete="current-password"
             />
-            {errors.password && <span className="field-error">⚠ {errors.password}</span>}
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
-          <button type="submit" className="btn-primary" disabled={submitting}>
+          <button type="submit" className="btn-primary auth-submit-btn" disabled={submitting}>
             {submitting && <span className="spinner" />}
             {submitting ? 'Logging in…' : 'Log in'}
           </button>
@@ -108,7 +108,7 @@ function Login() {
           Don't have an account? <Link to="/register">Sign up</Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
 

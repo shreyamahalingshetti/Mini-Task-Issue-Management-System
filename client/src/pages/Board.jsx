@@ -2,17 +2,27 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import Navbar from '../components/Navbar';
 import Column from '../components/Column';
+import TaskFormModal from '../components/TaskFormModal';
+import SearchFilterBar from '../components/SearchFilterBar';
 
 function Board() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (search = searchQuery, priority = priorityFilter) => {
     try {
       setLoading(true);
       setError('');
-      const res = await api.get('/tasks');
+      const params = {};
+      if (search && search.trim()) params.search = search.trim();
+      if (priority) params.priority = priority;
+
+      const res = await api.get('/tasks', { params });
       setTasks(res.data.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load tasks');
@@ -22,8 +32,13 @@ function Board() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    fetchTasks(searchQuery, priorityFilter);
+  }, [searchQuery, priorityFilter]);
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setPriorityFilter('');
+  };
 
   const handleStatusChange = async (taskId, newStatus) => {
     // Optimistic update
@@ -55,8 +70,34 @@ function Board() {
     }
   };
 
+  const handleOpenCreateModal = () => {
+    setEditingTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingTask(null);
+  };
+
   const handleEdit = (task) => {
-    console.log('Edit task requested:', task);
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = async (taskData) => {
+    if (!editingTask) {
+      // Create mode
+      const res = await api.post('/tasks', taskData);
+      setTasks((prevTasks) => [res.data.data, ...prevTasks]);
+    } else {
+      // Edit mode
+      const res = await api.put(`/tasks/${editingTask._id}`, taskData);
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t._id === editingTask._id ? res.data.data : t))
+      );
+    }
+    handleCloseModal();
   };
 
   const toDoTasks = tasks.filter((t) => t.status === 'To Do');
@@ -65,22 +106,35 @@ function Board() {
 
   return (
     <div className="board-page">
-      <Navbar />
+      <Navbar onNewTask={handleOpenCreateModal} />
 
       <main className="board-container">
-        {loading ? (
+        <SearchFilterBar
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+          priorityValue={priorityFilter}
+          onPriorityChange={setPriorityFilter}
+          onClear={handleClearFilters}
+          isSearching={loading}
+        />
+
+        {loading && tasks.length === 0 ? (
           <div className="board-status-message">
             <span className="spinner" /> Loading tasks...
           </div>
         ) : error ? (
           <div className="board-error-message">
             <p>{error}</p>
-            <button type="button" className="btn-retry" onClick={fetchTasks}>
+            <button
+              type="button"
+              className="btn-retry"
+              onClick={() => fetchTasks(searchQuery, priorityFilter)}
+            >
               Retry
             </button>
           </div>
         ) : (
-          <div className="board-columns">
+          <div className={`board-columns ${loading ? 'columns-loading' : ''}`}>
             <Column
               title="To Do"
               tasks={toDoTasks}
@@ -105,6 +159,13 @@ function Board() {
           </div>
         )}
       </main>
+
+      <TaskFormModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleModalSubmit}
+        initialData={editingTask}
+      />
     </div>
   );
 }

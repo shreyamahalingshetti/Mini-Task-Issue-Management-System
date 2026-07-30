@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthLayout from '../components/AuthLayout';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,7 +22,6 @@ function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFields((prev) => ({ ...prev, [name]: value }));
-    // Clear field error on change
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
     setGeneralError('');
   };
@@ -66,11 +66,10 @@ function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">✦</div>
-        <h1>Create account</h1>
-        <p className="subtitle">Start managing your tasks today.</p>
+    <AuthLayout>
+      <div className="auth-form-container">
+        <h2 className="auth-title">Create account</h2>
+        <p className="auth-subtitle">Start managing your tasks today.</p>
 
         {generalError && <div className="alert-error">{generalError}</div>}
 
@@ -87,7 +86,7 @@ function Register() {
               className={errors.name ? 'input-error' : ''}
               autoComplete="name"
             />
-            {errors.name && <span className="field-error">⚠ {errors.name}</span>}
+            {errors.name && <span className="field-error">{errors.name}</span>}
           </div>
 
           <div className="form-group">
@@ -102,7 +101,7 @@ function Register() {
               className={errors.email ? 'input-error' : ''}
               autoComplete="email"
             />
-            {errors.email && <span className="field-error">⚠ {errors.email}</span>}
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -117,7 +116,7 @@ function Register() {
               className={errors.password ? 'input-error' : ''}
               autoComplete="new-password"
             />
-            {errors.password && <span className="field-error">⚠ {errors.password}</span>}
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
           <div className="form-group">
@@ -133,11 +132,11 @@ function Register() {
               autoComplete="new-password"
             />
             {errors.confirmPassword && (
-              <span className="field-error">⚠ {errors.confirmPassword}</span>
+              <span className="field-error">{errors.confirmPassword}</span>
             )}
           </div>
 
-          <button type="submit" className="btn-primary" disabled={submitting}>
+          <button type="submit" className="btn-primary auth-submit-btn" disabled={submitting}>
             {submitting && <span className="spinner" />}
             {submitting ? 'Creating account…' : 'Create account'}
           </button>
@@ -147,7 +146,7 @@ function Register() {
           Already have an account? <Link to="/login">Log in</Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 }
 
